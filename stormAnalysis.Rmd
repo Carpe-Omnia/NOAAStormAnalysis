@@ -1,14 +1,19 @@
 ---
-title: "NWS Storm Analysis"
+title: "NOAA Storm Analysis"
 author: '"Stone Cold" Tomaz Rodrigues'
 date: "2025-02-12"
 output: html_document
 ---
 
+## Introduction
+Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
+
+This project involves exploring the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
+
 ## Main Questions
 The primary questions being asked in this analysis are:
-1. What types of storms are the most damaging to human life?
-2. What types of storms are the most damaging to property?
+What types of storms are the most damaging to human life?
+What types of storms are the most damaging to property?
 
 # Abstract
 Perhaps the most dramatic natural disaster in America, it is no suprise that tornadoes are the most damaging to human life and property. Out of the 4 figurs appearing below, tornadoes appear prominently in 3 of them. 

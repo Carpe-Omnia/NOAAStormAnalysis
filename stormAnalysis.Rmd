@@ -1,7 +1,27 @@
-dt <- function() {
+---
+title: "NWS Storm Analysis"
+author: '"Stone Cold" Tomaz Rodrigues'
+date: "2025-02-12"
+output: html_document
+---
+
+## Main Questions
+The primary questions being asked in this analysis are:
+1. What types of storms are the most damaging to human life?
+2. What types of storms are the most damaging to property?
+
+# Abstract
+Perhaps the most dramatic natural disaster in America, it is no suprise that tornadoes are the most damaging to human life and property. Out of the 4 figurs appearing below, tornadoes appear prominently in 3 of them. 
+Beyond tornadoes, it appears that the types of events causing fatalities and causing property damage are different. Heat related events cause lots of deaths in total and on average, while water and wind related events cause lots of property damage.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(dplyr)
-  
+```
+
+## Data Reading
+```{r data reading}
 ##checking to see if storm data exists and downloading it if it does not    
 stormDataURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 stormFileName <- "./myStormData.csv"
@@ -10,19 +30,32 @@ if(!file.exists(stormFileName)){
 }
 ##Checks to see if the file has already been read (saves a bunch of time on subsequent runs)
 if(!exists("myStormData")){myStormData <- read.csv(stormFileName)}
+```
 
-##messing with the date times
+## Data Processing
+I chose to add an additional column to the data that isolated just the year component
+of the date. This made plotting and data analysis easier
+```{r data processing}
 ##adding a year column to make plotting easier
 myStormData$YEAR<- format(as.POSIXct(myStormData$BGN_DATE, format = "%m/%d/%Y %H:%M:%S", tz = "" ), "%Y")
 myStormData$YEAR <- as.numeric(myStormData$YEAR)
+```
 
-##damage to human life
+# Results 
+
+## What storm are most damaging to human life?
+```{r }
 ##getting average fatalities for event type
 myFatalStorms <- aggregate(x=myStormData$FATALITIES, by = list(myStormData$EVTYPE), FUN=mean)
 myFatalStorms <- myFatalStorms[order(myFatalStorms$x, decreasing=TRUE),]
 colnames(myFatalStorms) <- c("stormType","AvgFatalities")
 print(head(myFatalStorms))
+```
+Here we can see that in terms of average fatalities, tornadoes top the list while 
+heat waves are unexpectedly well represented with 3 in the top 6.
 
+## Plotting damage to human life
+```{r}
 myFatalStorms_summary <- myStormData %>%
   group_by(EVTYPE) %>%
   summarize(Total_Sum = sum(FATALITIES), .groups = "drop") %>%
@@ -44,14 +77,24 @@ fatalPlot <- ggplot(myFatalStorms_summary, aes(x = YEAR, y = Sum_Value, fill = E
     xlim(1990, 2025) + 
     scale_x_continuous(breaks = unique(myFatalStorms_summary$YEAR))
 print(fatalPlot)
+print("")
+```
+Here we can see the most damaging event types to human life total
+Once again heat related events are well represented taking 2 of the top 5 spots
 
+## What storms are most damaging to property on average?
+```{r}
 ##economic Damage
 myExpensiveStorms <- aggregate(x=myStormData$PROPDMG, by = list(myStormData$EVTYPE), FUN=mean)
 myExpensiveStorms <- myExpensiveStorms[order(myExpensiveStorms$x, decreasing=TRUE),]
 colnames(myExpensiveStorms) <- c("stormType","AvgPropertyDamage")
 print(head(myExpensiveStorms))
+```
 
+Here we see that in terms of average property damage, water related events are king with floods taking 3/6 top spots and erosion taking yet another.
 
+## Plotting storms causing the most damage to property
+```{r}
 myExpensiveStorms_summary <- myStormData %>%
   group_by(EVTYPE) %>%
   summarize(Total_Sum = sum(PROPDMG), .groups = "drop") %>%
@@ -72,5 +115,6 @@ labs(title = "Sum of Property Damage by Year (Top 5 EVTYPEs)",
   theme_bw() +
   scale_x_continuous(breaks = unique(myExpensiveStorms_summary$YEAR))
 print(propertyPlot)
+```
 
-}
+Here we see that the top 5 most damaging to property in total are slightly different from the top 5 most damaging to human life. While heat occupied 2/5 top spots in the fatal plot, flooding occupies 2/5 spots in the property damage plot. Of course tornadoes are still king in both regards. 
